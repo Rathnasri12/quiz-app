@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Instructions</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #6a0dad, #4B0082);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      color: white;
+    }
+
+    .box {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 30px 40px;
+      border-radius: 20px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 28px;
+      margin-bottom: 15px;
+      color: #ffffff;
+    }
+
+    h3 {
+      font-size: 22px;
+      margin-bottom: 15px;
+      color: #ffdf57;
+    }
+
+    ul {
+      list-style-type: square;
+      padding-left: 20px;
+      text-align: left;
+      margin-bottom: 25px;
+    }
+
+    li {
+      margin-bottom: 12px;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    button {
+      padding: 12px 25px;
+      background-color: #4B0082;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #5e0cb5;
+    }
+
+    @media (max-width: 600px) {
+      .box {
+        padding: 25px 20px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+
+      h3 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Welcome, <%= name %>!</h2>
+    <h3>Instructions</h3>
+    <ul>
+      <li>Don't switch tabs during the quiz.</li>
+      <li>If you switch tabs more than 2 times, the quiz will auto-terminate.</li>
+    </ul>
+
+    <form action="/quiz" method="POST">
+      <input type="hidden" name="name" value="<%= name %>">
+      <button type="submit">Start Quiz</button>
+    </form>
+  </div>
+</body>
+</html>

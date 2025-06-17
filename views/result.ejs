@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Result</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      height: 100vh;
+      background: linear-gradient(135deg, #9857c7, #49146e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .result-box {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      backdrop-filter: blur(10px);
+    }
+
+    .result-box h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+
+    .result-box p {
+      font-size: 18px;
+      margin: 12px 0;
+    }
+
+    .score {
+      font-size: 24px;
+      font-weight: bold;
+      color: #15afda;
+    }
+
+    .email {
+      font-weight: bold;
+      color: #fff75f;
+    }
+
+    .home-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #ffffff;
+      color: rgb(48, 48, 48);
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .home-btn:hover {
+      background-color: #857f8d;
+    }
+  </style>
+</head>
+<body>
+  <div class="result-box">
+    <h2>Quiz Submitted ✅</h2>
+    <p class="score">Your Score: <%= score %> / <%= total %></p>
+    <p>Confirmation email sent to <span class="email"><%= userData?.email || '?' %></span>.</p>
+    <a href="/" class="home-btn">Back to Home</a>
+  </div>
+</body>
+</html>
