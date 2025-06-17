@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .category-section { display: none; padding: 20px; }
+    .active { display: block; }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #4B0082;
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      text-align: center;
+    }
+    h2{
+      text-align: center;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      color: #4B0082;
+    }
+    h3 {
+      background: #333;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin: 5px 0;
+    }
+    .question-block {
+    margin-bottom: 20px;
+  }
+
+  .option {
+    display: block;
+    margin: 6px 0;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+  }
+
+  input[type="radio"] {
+    margin-right: 8px;
+  }
+  </style>
+</head>
+<body>
+  <h2>Welcome <%- name %>!</h2>
+
+  <form id="quizForm" method="POST" action="/submit">
+    <% categories.forEach((cat, index) => { %>
+      <div class="category-section" id="cat<%- index %>">
+        <h3><%- cat %></h3>
+        <% categorizedQuestions[cat].forEach(q => { %>
+         <div class="question-block">
+  <p><%- q.question %></p>
+  <% q.options.forEach(opt => { %>
+    <label class="option">
+      <input type="radio" name="q<%- q._id %>" value="<%- opt %>"> <%- opt %>
+    </label>
+  <% }) %>
+</div>
+
+        <% }) %>
+
+        <% if (index < categories.length - 1) { %>
+          <button type="button" class="next-btn" data-index="<%- index %>">Next</button>
+        <% } else { %>
+          <button type="submit">Submit</button>
+        <% } %>
+      </div>
+    <% }) %>
+  </form>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Show first section
+      document.getElementById('cat0').classList.add('active');
+
+      // Next button logic
+      document.querySelectorAll('.next-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const index = parseInt(this.getAttribute('data-index'));
+          document.getElementById('cat' + index).classList.remove('active');
+          document.getElementById('cat' + (index + 1)).classList.add('active');
+        });
+      });
+    });
+
+    // Tab switch tracking
+    let tabSwitchCount = 0;
+    window.addEventListener("blur", () => {
+      tabSwitchCount++;
+      if (tabSwitchCount > 2) {
+        alert("You have switched tabs too many times. Quiz will end now.");
+        window.location.href = "/"; // force exit
+      } else {
+        alert("Don't switch tabs! Warning " + tabSwitchCount + "/2");
+      }
+    });
+  </script>
+</body>
+</html>
