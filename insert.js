@@ -24,7 +24,7 @@ const seedQuestions = async () => {
       { category: 'General Aptitude', question: 'A man travels 2/3 of journey at 4 km/h and rest at 6 km/h. Journey is 12 hours. Distance?', options: ['48 km', '56 km', '60 km', '64 km'], answer: '60 km' },
 
       // -- Web (13 questions - removed the 2 problematic ones)
-      //{ category: 'Web', question: 'Which HTML tag is used to define an unordered list?', options: ['<ul>', '<ol>', '<li>', '<list>'], answer: '<ul>' },
+      //{ category: 'Web', question: 'Which HTML tag is used to define an unordered list?', options: ['\"<ul>\"', '<ol>', '<li>', '<list>'], answer: '<ul>' },
       //{ category: 'Web', question: 'In HTML5, which element is used to represent navigation links?', options: ['<nav>', '<header>', '<footer>', '<link>'], answer: '<nav>' },
 
       { category: 'Web', question: 'How do you select class "example" in CSS?', options: ['example', '.example', '#example', '*example'], answer: '.example' },

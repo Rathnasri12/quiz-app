@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Result - <%= name %></title>
+  <style>
+    .question-box {
+      margin: 20px;
+      padding: 15px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+    .option {
+      padding: 5px 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+    .correct { background-color: #c8e6c9; }   /* Green */
+    .wrong { background-color: #ffcdd2; }     /* Red */
+    .skipped { background-color: #fff9c4; }   /* Yellow */
+    .mark { font-weight: bold; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Hello <%= name %>, here’s your detailed result:</h1>
+
+  <% allQuestions.forEach((q, index) => {
+    const yourAns = submittedAnswers[`q${q._id}`];
+    const correctAns = q.answer;
+    const isSkipped = !yourAns;
+    const isCorrect = yourAns === correctAns;
+  %>
+    <div class="question-box">
+      <h3>Q<%= index + 1 %>. <%= q.question %></h3>
+      <% q.options.forEach(opt => {
+        let className = '';
+        if (opt === correctAns && isSkipped) className = 'skipped';
+        else if (opt === correctAns) className = 'correct';
+        else if (opt === yourAns && yourAns !== correctAns) className = 'wrong';
+      %>
+        <div class="option <%= className %>">
+          <%= opt %>
+          <% if (opt === yourAns) { %> (Your Answer) <% } %>
+          <% if (opt === correctAns) { %> (Correct) <% } %>
+        </div>
+      <% }) %>
+
+      <div class="mark">
+        <% if (isSkipped) { %> ⚠ Skipped <% }
+           else if (isCorrect) { %> ✅ Correct <% }
+           else { %> ❌ Wrong <% } %>
+      </div>
+    </div>
+  <% }) %>
+</body>
+</html>

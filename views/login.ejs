@@ -1,23 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Quiz App</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
-      padding: 0;
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #4B0082, #6a0dad);
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 20px;
     }
 
     .login-card {
@@ -25,31 +28,45 @@
       padding: 40px 30px;
       border-radius: 20px;
       box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
-      width: 350px;
+      width: 100%;
+      max-width: 350px;
+      text-align: center;
     }
 
     .login-card h2 {
-      text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
       color: #4B0082;
+      font-size: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-size: 14px;
     }
 
     input[type="text"],
     input[type="email"],
-    input[type="tel"] {
+    input[type="tel"],
+    input[type="number"] {
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
       border-radius: 10px;
       font-size: 16px;
-      transition: border-color 0.3s;
+      transition: all 0.3s;
     }
 
     input:focus {
       outline: none;
       border-color: #4B0082;
-      box-shadow: 0 0 5px rgba(75, 0, 130, 0.3);
+      box-shadow: 0 0 0 3px rgba(75, 0, 130, 0.1);
     }
 
     button {
@@ -59,29 +76,106 @@
       border: none;
       border-radius: 10px;
       color: white;
-      font-size: 18px;
+      font-size: 16px;
+      font-weight: 500;
       cursor: pointer;
-      margin-top: 20px;
+      margin-top: 10px;
       transition: background 0.3s;
     }
 
     button:hover {
       background-color: #5c0ca9;
     }
+
+    .register-link {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .register-link a {
+      color: #4B0082;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      color: #dc3545;
+      font-size: 14px;
+      margin-top: 5px;
+      text-align: left;
+    }
+
+    .success-message {
+      color: #28a745;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .otp-notice {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
-
   <div class="login-card">
-    <h2>Quiz Login</h2>
-    <form action="/start" method="POST">
-      <input type="text" name="name" placeholder="Name" required>
-      <input type="email" name="email" placeholder="Email" required>
-      <input type="tel" name="phone" placeholder="Phone" required>
-      <button type="submit">Start Quiz</button>
-    </form>
-  </div>
+    <h2>Login</h2>
 
+    <% const show = typeof showOTP !== 'undefined' ? showOTP : false; %>
+    <% const userEmail = typeof email !== 'undefined' ? email : ''; %>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="error-message"><%= error %></div>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+      <div class="success-message"><%= success %></div>
+    <% } %>
+
+    <% if (!show) { %>
+      <!-- Step 1: Get OTP -->
+      <form action="/login" method="POST">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="Enter your name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+        </div>
+        
+        <button type="submit">Get OTP</button>
+      </form>
+    <% } else { %>
+      <!-- Step 2: Enter OTP -->
+      <form action="/verify-login-otp" method="POST">
+        <div class="otp-notice">We've sent an OTP to <%= userEmail %></div>
+        
+        <div class="form-group">
+          <label for="otp">OTP Code</label>
+          <input type="number" id="otp" name="otp" placeholder="Enter 6-digit OTP" required>
+          <input type="hidden" name="email" value="<%= userEmail %>">
+        </div>
+        
+        <button type="submit">Verify OTP</button>
+      </form>
+    <% } %>
+
+    <div class="register-link">
+      Don't have an account? <a href="/signup">Register here</a>
+    </div>
+  </div>
 </body>
 </html>
-

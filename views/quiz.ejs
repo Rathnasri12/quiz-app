@@ -18,7 +18,7 @@
       cursor: pointer;
       text-align: center;
     }
-    h2{
+    h2 {
       text-align: center;
       font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
       color: #4B0082;
@@ -35,40 +35,42 @@
       margin: 5px 0;
     }
     .question-block {
-    margin-bottom: 20px;
-  }
-
-  .option {
-    display: block;
-    margin: 6px 0;
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-  }
-
-  input[type="radio"] {
-    margin-right: 8px;
-  }
+      margin-bottom: 20px;
+    }
+    .option {
+      display: block;
+      margin: 6px 0;
+      font-size: 16px;
+    }
+    input[type="radio"] {
+      margin-right: 8px;
+    }
+    #preview {
+      display: block;
+      margin: 10px auto;
+      border: 2px solid #4B0082;
+      border-radius: 10px;
+    }
   </style>
 </head>
 <body>
   <h2>Welcome <%- name %>!</h2>
+  <video id="preview" width="300" autoplay muted></video>
 
   <form id="quizForm" method="POST" action="/submit">
     <% categories.forEach((cat, index) => { %>
       <div class="category-section" id="cat<%- index %>">
         <h3><%- cat %></h3>
         <% categorizedQuestions[cat].forEach(q => { %>
-         <div class="question-block">
-  <p><%- q.question %></p>
-  <% q.options.forEach(opt => { %>
-    <label class="option">
-      <input type="radio" name="q<%- q._id %>" value="<%- opt %>"> <%- opt %>
-    </label>
-  <% }) %>
-</div>
-
+          <div class="question-block">
+            <p><%- q.question %></p>
+            <% q.options.forEach(opt => { %>
+              <label class="option">
+                <input type="radio" name="q<%- q._id %>" value="<%- opt %>"> <%- opt %>
+              </label>
+            <% }) %>
+          </div>
         <% }) %>
-
         <% if (index < categories.length - 1) { %>
           <button type="button" class="next-btn" data-index="<%- index %>">Next</button>
         <% } else { %>
@@ -80,10 +82,7 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      // Show first section
       document.getElementById('cat0').classList.add('active');
-
-      // Next button logic
       document.querySelectorAll('.next-btn').forEach(btn => {
         btn.addEventListener('click', function () {
           const index = parseInt(this.getAttribute('data-index'));
@@ -93,16 +92,79 @@
       });
     });
 
-    // Tab switch tracking
+    // ======== Tab Switch Tracking ========
     let tabSwitchCount = 0;
     window.addEventListener("blur", () => {
       tabSwitchCount++;
       if (tabSwitchCount > 2) {
         alert("You have switched tabs too many times. Quiz will end now.");
-        window.location.href = "/"; // force exit
+        window.location.href = "/";
       } else {
         alert("Don't switch tabs! Warning " + tabSwitchCount + "/2");
       }
+    });
+
+    // Report tab switch to server
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        fetch('/tab-switched', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+      }
+    });
+
+    // ======== Camera Recording Logic ========
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById('preview').srcObject = stream;
+
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.start();
+        console.log("🎥 Recording started");
+
+        setTimeout(() => {
+          if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+            console.log("🛑 Auto-stopped after 45 mins");
+          }
+        }, 45 * 60 * 1000);
+      } catch (err) {
+        alert("❌ Camera access denied!");
+        console.error(err);
+      }
+    }
+
+    window.onload = startCamera;
+
+    document.getElementById('quizForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+
+      mediaRecorder.onstop = async () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const formData = new FormData();
+        formData.append('video', blob, '<%= email.replace(/[@.]/g, "_") %>.webm');
+
+        await fetch('/upload-video', {
+          method: 'POST',
+          body: formData
+        });
+
+        console.log("✅ Video uploaded");
+        e.target.submit();
+      };
     });
   </script>
 </body>
