@@ -64,7 +64,7 @@ app.post('/upload-video', upload.single('video'), (req, res) => {
 });
 
 
-// =================== SIGNUP ===================
+// =================== SIGNUP =========//
 app.get('/signup', (req, res) => {
   res.render('signup', { error: null, success: null });
 });

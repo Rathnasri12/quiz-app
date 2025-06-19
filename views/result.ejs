@@ -3,87 +3,106 @@
 <head>
   <title>Quiz Result</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f7fa;
+    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
-    .container {
-      max-width: 700px;
-      margin: 50px auto;
-      background-color: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    body {
+      font-family: 'Poppins', sans-serif;
+      height: 100vh;
+      background: linear-gradient(135deg, #9857c7, #49146e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      padding: 20px;
     }
 
-    h1 {
-      color: #333;
+    .result-box {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      backdrop-filter: blur(10px);
     }
 
-    h2 {
-      color: #0066cc;
+    .result-box h2 {
+      font-size: 26px;
+      margin-bottom: 15px;
+    }
+
+    .result-box h3 {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+
+    .result-box ul {
+      list-style: none;
+      padding: 0;
       margin-top: 10px;
     }
 
-    h3 {
-      margin-top: 30px;
-      color: #444;
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-
-    li {
-      margin-bottom: 10px;
-    }
-
-    p {
-      font-size: 16px;
+    .result-box li {
       margin: 8px 0;
+      font-size: 15px;
     }
 
-    a {
+    .score {
+      font-size: 24px;
+      font-weight: bold;
+      color: #15afda;
+      margin-top: 10px;
+    }
+
+    .email, .phone {
+      color: #fff75f;
+      font-weight: 500;
+    }
+
+    .home-btn {
       display: inline-block;
-      margin-top: 20px;
+      margin: 15px 10px 0 10px;
       padding: 10px 20px;
-      background-color: #0066cc;
-      color: white;
+      background-color: #ffffff;
+      color: #333;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
       text-decoration: none;
-      border-radius: 5px;
+      transition: background 0.3s;
     }
 
-    a:hover {
-      background-color: #004b99;
+    .home-btn:hover {
+      background-color: #857f8d;
+      color: white;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Hi <%= userData.name %>,</h1>
-    <h2>You have successfully completed the quiz!</h2>
-
-    <h3>Total Score: <%= score %> / <%= total %></h3>
+  <div class="result-box">
+    <h2>Hi <%= userData.name %>,</h2>
+    <p class="score">You scored <%= score %> / <%= total %></p>
 
     <h3>Section-wise Breakdown:</h3>
     <ul>
       <% for (let section in sectionScores) { %>
-        <li>
-          <strong><%= section %>:</strong>
-          <%= sectionScores[section].correct %> / <%= sectionScores[section].total %>
-        </li>
+        <li><strong><%= section %>:</strong> <%= sectionScores[section].correct %> / <%= sectionScores[section].total %></li>
       <% } %>
     </ul>
 
-    <p>Email: <%= userData.email %></p>
-    <p>Phone: <%= userData.phone %></p>
+    <p>Email: <span class="email"><%= userData.email %></span></p>
+    <p>Phone: <span class="phone"><%= userData.phone %></span></p>
 
-    <a href="/dashboard">Go to Dashboard</a>
-    <a href="/view-result">📊 View My Detailed Result</a>
-
+    <a href="/dashboard" class="home-btn">🏠 Go to Dashboard</a>
+    <a href="/view-result" class="home-btn">📊 View My Detailed Result</a>
   </div>
 </body>
 </html>

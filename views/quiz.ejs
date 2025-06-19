@@ -5,9 +5,48 @@
   <style>
     body {
       font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      margin: 0;
+      padding: 20px;
     }
-    .category-section { display: none; padding: 20px; }
-    .active { display: block; }
+
+    h2 {
+      text-align: center;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      color: #4B0082;
+    }
+
+    h3 {
+      background: #333;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    .category-section {
+      display: none;
+      padding: 20px;
+    }
+
+    .active {
+      display: block;
+    }
+
+    .question-block {
+      margin-bottom: 20px;
+    }
+
+    .option {
+      display: block;
+      margin: 6px 0;
+      font-size: 16px;
+    }
+
+    input[type="radio"] {
+      margin-right: 8px;
+    }
+
     button {
       margin-top: 20px;
       padding: 10px 20px;
@@ -16,63 +55,37 @@
       color: white;
       font-size: 16px;
       cursor: pointer;
-      text-align: center;
     }
-    h2 {
-      text-align: center;
-      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-      color: #4B0082;
-    }
-    h3 {
-      background: #333;
-      color: white;
-      padding: 10px;
-      border-radius: 5px;
-      text-align: center;
-    }
-    label {
-      display: block;
-      margin: 5px 0;
-    }
-    .question-block {
-      margin-bottom: 20px;
-    }
-    .option {
-      display: block;
-      margin: 6px 0;
-      font-size: 16px;
-    }
-    input[type="radio"] {
-      margin-right: 8px;
-    }
+
     #preview {
       display: block;
-      margin: 10px auto;
+      margin: 20px auto;
       border: 2px solid #4B0082;
       border-radius: 10px;
     }
   </style>
 </head>
 <body>
-  <h2>Welcome <%- name %>!</h2>
+
+  <h2>Welcome <%= name %>!</h2>
   <video id="preview" width="300" autoplay muted></video>
 
   <form id="quizForm" method="POST" action="/submit">
     <% categories.forEach((cat, index) => { %>
-      <div class="category-section" id="cat<%- index %>">
-        <h3><%- cat %></h3>
+      <div class="category-section" id="cat<%= index %>">
+        <h3><%= cat %></h3>
         <% categorizedQuestions[cat].forEach(q => { %>
           <div class="question-block">
-            <p><%- q.question %></p>
+            <p><%= q.question %></p>
             <% q.options.forEach(opt => { %>
               <label class="option">
-                <input type="radio" name="q<%- q._id %>" value="<%- opt %>"> <%- opt %>
+                <input type="radio" name="q<%= q._id %>" value="<%= opt %>"> <%= opt %>
               </label>
             <% }) %>
           </div>
         <% }) %>
         <% if (index < categories.length - 1) { %>
-          <button type="button" class="next-btn" data-index="<%- index %>">Next</button>
+          <button type="button" class="next-btn" data-index="<%= index %>">Next</button>
         <% } else { %>
           <button type="submit">Submit</button>
         <% } %>
@@ -83,6 +96,7 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       document.getElementById('cat0').classList.add('active');
+
       document.querySelectorAll('.next-btn').forEach(btn => {
         btn.addEventListener('click', function () {
           const index = parseInt(this.getAttribute('data-index'));
@@ -92,7 +106,7 @@
       });
     });
 
-    // ======== Tab Switch Tracking ========
+    // ========== Tab Switch Tracking ==========
     let tabSwitchCount = 0;
     window.addEventListener("blur", () => {
       tabSwitchCount++;
@@ -115,7 +129,7 @@
       }
     });
 
-    // ======== Camera Recording Logic ========
+    // ========== Camera Recording ==========
     let mediaRecorder;
     let recordedChunks = [];
 
@@ -148,6 +162,7 @@
 
     document.getElementById('quizForm').addEventListener('submit', function (e) {
       e.preventDefault();
+
       if (mediaRecorder && mediaRecorder.state !== 'inactive') {
         mediaRecorder.stop();
       }
