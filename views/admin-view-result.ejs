@@ -110,8 +110,11 @@
           <p><strong>Phone:</strong> <%= student.phone %></p>
         </div>
         <div class="col-md-4">
-          <p><strong>Total Score:</strong> <%= student.score || 0 %> / <%= resultView.length %></p>
-        </div>
+        <input type="text" class="form-control" 
+         value="<%= student.score || 0 %> / <%= resultView.length %>" 
+         readonly>
+</div>
+
       </div>
     </div>
 
