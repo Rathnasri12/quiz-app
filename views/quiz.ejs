@@ -129,58 +129,66 @@
       }
     });
 
-    // ========== Camera Recording ==========
-    let mediaRecorder;
-    let recordedChunks = [];
+   // ========== Camera Recording ==========
+let mediaRecorder;
+let recordedChunks = [];
 
-    async function startCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        document.getElementById('preview').srcObject = stream;
+async function startCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    document.getElementById('preview').srcObject = stream;
 
-        mediaRecorder = new MediaRecorder(stream);
-        mediaRecorder.ondataavailable = (e) => {
-          if (e.data.size > 0) recordedChunks.push(e.data);
-        };
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) recordedChunks.push(e.data);
+    };
 
-        mediaRecorder.start();
-        console.log("🎥 Recording started");
+    mediaRecorder.start();
+    console.log("🎥 Recording started");
 
-        setTimeout(() => {
-          if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
-            console.log("🛑 Auto-stopped after 45 mins");
-          }
-        }, 45 * 60 * 1000);
-      } catch (err) {
-        alert("❌ Camera access denied!");
-        console.error(err);
-      }
-    }
-
-    window.onload = startCamera;
-
-    document.getElementById('quizForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
+    setTimeout(() => {
       if (mediaRecorder && mediaRecorder.state !== 'inactive') {
         mediaRecorder.stop();
+        console.log("🛑 Auto-stopped after 45 mins");
       }
+    }, 45 * 60 * 1000);
+  } catch (err) {
+    alert("❌ Camera access denied!");
+    console.error(err);
+  }
+}
 
-      mediaRecorder.onstop = async () => {
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-        const formData = new FormData();
-        formData.append('video', blob, '<%= email.replace(/[@.]/g, "_") %>.webm');
+window.onload = startCamera;
 
-        await fetch('/upload-video', {
-          method: 'POST',
-          body: formData
-        });
+document.getElementById('quizForm').addEventListener('submit', function (e) {
+  e.preventDefault();
 
-        console.log("✅ Video uploaded");
-        e.target.submit();
-      };
-    });
+  // Define onstop before stopping the recorder
+  mediaRecorder.onstop = async () => {
+    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    const formData = new FormData();
+    formData.append('video', blob, '<%= email.replace(/[@.]/g, "_") %>.webm');
+
+    try {
+      await fetch('/upload-video', {
+        method: 'POST',
+        body: formData
+      });
+      console.log("✅ Video uploaded");
+    } catch (err) {
+      console.error("❌ Upload failed:", err);
+    }
+
+    e.target.submit();
+  };
+
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+  } else {
+    e.target.submit(); // fallback if already stopped
+  }
+});
+
   </script>
 </body>
 </html>
