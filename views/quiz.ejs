@@ -132,6 +132,7 @@
    // ========== Camera Recording ==========
 let mediaRecorder;
 let recordedChunks = [];
+let isSubmitted = false; // Track whether quiz was submitted
 
 async function startCamera() {
   try {
@@ -146,10 +147,11 @@ async function startCamera() {
     mediaRecorder.start();
     console.log("🎥 Recording started");
 
+    // Auto-stop after 45 mins — DO NOT upload here
     setTimeout(() => {
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
-        console.log("🛑 Auto-stopped after 45 mins");
+        console.log("🛑 Auto-stopped after 45 mins (not uploaded unless submitted)");
       }
     }, 45 * 60 * 1000);
   } catch (err) {
@@ -162,32 +164,47 @@ window.onload = startCamera;
 
 document.getElementById('quizForm').addEventListener('submit', function (e) {
   e.preventDefault();
+  isSubmitted = true;
 
-  // Define onstop before stopping the recorder
-  mediaRecorder.onstop = async () => {
-    const blob = new Blob(recordedChunks, { type: 'video/webm' });
-    const formData = new FormData();
-    formData.append('video', blob, '<%= email.replace(/[@.]/g, "_") %>.webm');
-
-    try {
-      await fetch('/upload-video', {
-        method: 'POST',
-        body: formData
-      });
-      console.log("✅ Video uploaded");
-    } catch (err) {
-      console.error("❌ Upload failed:", err);
-    }
-
-    e.target.submit();
-  };
-
-  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-    mediaRecorder.stop();
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop(); // onstop will handle upload
   } else {
-    e.target.submit(); // fallback if already stopped
+    uploadVideoAndSubmit(e); // fallback if already stopped
   }
 });
+
+function uploadVideoAndSubmit(e) {
+  const blob = new Blob(recordedChunks, { type: 'video/webm' });
+  const formData = new FormData();
+  formData.append('video', blob, '<%= email.replace(/[@.]/g, "_") %>.webm');
+
+  fetch('/upload-video', {
+    method: 'POST',
+    body: formData
+  }).then(() => {
+    console.log("✅ Video uploaded");
+    e.target.submit(); // Now submit the form
+  }).catch((err) => {
+    console.error("❌ Upload failed:", err);
+    e.target.submit(); // Still submit the form even if upload fails
+  });
+}
+
+// This runs when recording stops — only upload if form was submitted
+if (mediaRecorder) {
+  mediaRecorder.onstop = (e) => {
+    if (isSubmitted) {
+      const formEvent = new Event('realSubmit', { bubbles: true });
+      document.getElementById('quizForm').dispatchEvent(formEvent);
+    } else {
+      console.log("🛑 Recording stopped, but quiz not submitted — no upload");
+    }
+  };
+}
+
+// Custom event to trigger upload + submit
+document.getElementById('quizForm').addEventListener('realSubmit', uploadVideoAndSubmit);
+
 
   </script>
 </body>
