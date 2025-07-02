@@ -40,9 +40,16 @@
         </div>
         
         <div class="mb-3">
-          <label for="category" class="form-label">Category:</label>
-          <input type="text" class="form-control" id="category" name="category" value="<%= question.category %>" required>
-        </div>
+  <label for="category" class="form-label">Category:</label>
+  <select class="form-select" id="category" name="category" required>
+    <option value="">-- Select Category --</option>
+    <option value="General Aptitude" <%= question.category === 'General Aptitude' ? 'selected' : '' %>>General Aptitude</option>
+    <option value="Web" <%= question.category === 'Web' ? 'selected' : '' %>>Web</option>
+    <option value="English" <%= question.category === 'English' ? 'selected' : '' %>>English</option>
+    <option value="Logical Reasoning" <%= question.category === 'Logical Reasoning' ? 'selected' : '' %>>Logical Reasoning</option>
+  </select>
+</div>
+
         
         <div class="d-flex justify-content-between">
           <button type="submit" class="btn btn-primary">Update Question</button>
